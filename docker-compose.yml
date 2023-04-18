@@ -1,11 +1,23 @@
 version: '3'
 
 services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: alezardini/nginx:prod
+    container_name: proxy
+    networks:
+      - node-network
+    ports:
+      - "8080:80"
+    depends_on:
+      - app
   app:
     build:
       context: node
     container_name: app
-    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh node index.js
     networks:
       - node-network
     volumes:
